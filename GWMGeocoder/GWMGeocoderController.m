@@ -8,6 +8,8 @@
 
 #import "GWMGeocoderController.h"
 
+@import Contacts;
+
 #pragma mark Notification Names
 NSNotificationName const GWMGeocoderControllerDidUpdatePlacemarkNotification = @"GWMGeocoderControllerDidUpdatePlacemarkNotification";
 NSNotificationName const GWMGeocoderControllerDidUpdateLocationNotification = @"GWMGeocoderControllerDidUpdateLocationNotification";
@@ -115,33 +117,72 @@ NSString * const GWMGeocoderControllerError = @"GWMGeocoderControllerError";
 
 -(void)geocodeAddressDictionary:(NSDictionary *)addressDictionary completion:(GWMGeocoderCompletionBlock)completion
 {
-    [self.geocoder geocodeAddressDictionary:addressDictionary completionHandler:^(NSArray *placemarks, NSError *error) {
-        
-        if (error) {
+    
+    if (@available(iOS 11.0, *)) {
+        CNPostalAddress *postalAddress = [[CNPostalAddress alloc] init];
+        [postalAddress setValue:addressDictionary[CNPostalAddressStreetKey] forKey:CNPostalAddressStreetKey];
+        [postalAddress setValue:addressDictionary[CNPostalAddressCityKey] forKey:CNPostalAddressCityKey];
+        [postalAddress setValue:addressDictionary[CNPostalAddressStateKey] forKey:CNPostalAddressStateKey];
+        [postalAddress setValue:addressDictionary[CNPostalAddressPostalCodeKey] forKey:CNPostalAddressPostalCodeKey];
+        [self.geocoder geocodePostalAddress:postalAddress completionHandler:^(NSArray *placemarks, NSError *error) {
             
-            if (completion)
-                completion(nil, error);
-            else
-                [self handleError:error];
-            
-        } else {
-            CLPlacemark *placemark = [placemarks lastObject];
-            
-            self.previousPlacemark = [[CLPlacemark alloc] initWithPlacemark:self.currentPlacemark];
-            self.currentPlacemark = [[CLPlacemark alloc] initWithPlacemark:placemark];
-            self.location = placemark.location;
-            
-            if (completion)
-                completion(placemarks, nil);
-            else {
-                NSDictionary *userInfo = @{GWMGeocoderControllerCurrentPlacemark:self.currentPlacemark,
-                                           GWMGeocoderControllerPreviousPlacemark:self.previousPlacemark,
-                                           GWMGeocoderControllerCurrentLocation:self.location};
+            if (error) {
                 
-                [[NSNotificationCenter defaultCenter] postNotificationName:GWMGeocoderControllerDidUpdateLocationNotification object:self userInfo:userInfo];
+                if (completion)
+                    completion(nil, error);
+                else
+                    [self handleError:error];
+                
+            } else {
+                CLPlacemark *placemark = [placemarks lastObject];
+                
+                self.previousPlacemark = [[CLPlacemark alloc] initWithPlacemark:self.currentPlacemark];
+                self.currentPlacemark = [[CLPlacemark alloc] initWithPlacemark:placemark];
+                self.location = placemark.location;
+                
+                if (completion)
+                    completion(placemarks, nil);
+                else {
+                    NSDictionary *userInfo = @{GWMGeocoderControllerCurrentPlacemark:self.currentPlacemark,
+                                               GWMGeocoderControllerPreviousPlacemark:self.previousPlacemark,
+                                               GWMGeocoderControllerCurrentLocation:self.location};
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:GWMGeocoderControllerDidUpdateLocationNotification object:self userInfo:userInfo];
+                }
             }
-        }
-    }];
+            
+        }];
+    } else {
+        // Fallback on earlier versions
+        [self.geocoder geocodeAddressDictionary:addressDictionary completionHandler:^(NSArray *placemarks, NSError *error) {
+            
+            if (error) {
+                
+                if (completion)
+                    completion(nil, error);
+                else
+                    [self handleError:error];
+                
+            } else {
+                CLPlacemark *placemark = [placemarks lastObject];
+                
+                self.previousPlacemark = [[CLPlacemark alloc] initWithPlacemark:self.currentPlacemark];
+                self.currentPlacemark = [[CLPlacemark alloc] initWithPlacemark:placemark];
+                self.location = placemark.location;
+                
+                if (completion)
+                    completion(placemarks, nil);
+                else {
+                    NSDictionary *userInfo = @{GWMGeocoderControllerCurrentPlacemark:self.currentPlacemark,
+                                               GWMGeocoderControllerPreviousPlacemark:self.previousPlacemark,
+                                               GWMGeocoderControllerCurrentLocation:self.location};
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:GWMGeocoderControllerDidUpdateLocationNotification object:self userInfo:userInfo];
+                }
+            }
+            
+        }];
+    }
 }
 
 -(void)geocodeAddressString:(NSString *)addressString completion:(GWMGeocoderCompletionBlock)completion
