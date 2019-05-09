@@ -37,10 +37,10 @@ extern NSString * const GWMGeocoderControllerCurrentLocation;
 extern NSString * const GWMGeocoderControllerError;
 /*!
  * @brief This block gets called when a geocoding request is completed.
- * @param placemark A NSAray of CLPlacemark ojects representing the most recent result of the geocoding request. This parameter will be nil if there is an error.
+ * @param placemarks A NSArray of CLPlacemark ojects representing the most recent result of the geocoding request. This parameter will be nil if there is an error.
  * @param error A NSError object. This parameter will be nil if there is no error.
  */
-typedef void (^GWMGeocoderCompletionBlock)(NSArray *_Nullable placemark, NSError *_Nullable error);
+typedef void (^GWMGeocoderCompletionBlock)(NSArray<CLPlacemark*> *_Nullable placemarks, NSError *_Nullable error);
 /*!
  * @class GWMGeocoderController
  * @discussion Use an instance of this class to interact with an instance of CLGeocoder. This class also  contains some convenience methods for determining any differences between the previous and current placemarks.
