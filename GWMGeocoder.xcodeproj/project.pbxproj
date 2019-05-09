@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1A5E29B32271179300E284C1 /* GWMGeocoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A5E29B12271179300E284C1 /* GWMGeocoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1A5E29BB227117C700E284C1 /* GWMGeocoderController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A5E29B9227117C700E284C1 /* GWMGeocoderController.m */; };
-		1A5E29BC227117C700E284C1 /* GWMGeocoderController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A5E29BA227117C700E284C1 /* GWMGeocoderController.h */; };
+		1A5E29BC227117C700E284C1 /* GWMGeocoderController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A5E29BA227117C700E284C1 /* GWMGeocoderController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
